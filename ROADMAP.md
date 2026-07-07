@@ -1,7 +1,5 @@
 # Roadmap
 
-Sequenced design-first, so each phase ships something usable.
-
 ## Phase 0 — Foundation (this release, v1.0)
 - [x] OpenAPI contract implemented end-to-end (`openapi/aibf.yaml`)
 - [x] Feature model splitting merit vs protected-proxy signals
