@@ -1,0 +1,10 @@
+AI Bias Firewall (AIBF)
+Copyright (c) Jay Barach (github.com/jbarach2012)
+
+This product includes software for explainable, human-in-the-loop bias
+detection in Applicant Tracking System (ATS) decisions.
+
+Licensed under the Apache License, Version 2.0. You may obtain a copy of the
+License in the accompanying LICENSE file or at:
+
+    http://www.apache.org/licenses/LICENSE-2.0

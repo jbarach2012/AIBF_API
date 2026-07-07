@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it."
+title: "AI Bias Firewall (AIBF): explainable, human-in-the-loop bias detection for ATS decisions"
+abstract: >-
+  A plug-in bias-detection layer for Applicant Tracking Systems that attributes
+  each hiring-screening decision to merit versus protected-attribute-proxy
+  features, produces an explainable bias score, flags biased decisions for human
+  review, and retrains from HR feedback.
+authors:
+  - family-names: "Barach"
+    given-names: "Jay"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+version: 1.0.0
+license: Apache-2.0
+repository-code: "https://github.com/jbarach2012/AIBF_API"
+keywords:
+  - applicant tracking system
+  - algorithmic bias
+  - fairness
+  - explainability
+  - SHAP
+  - recruiting

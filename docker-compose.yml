@@ -1,0 +1,8 @@
+services:
+  aibf:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      AIBF_DATABASE_URL: "sqlite:///./aibf.db"
+      AIBF_SEED_DEMO: "1"
