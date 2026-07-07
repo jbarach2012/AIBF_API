@@ -1,0 +1,10 @@
+flowchart LR
+    C([Candidate]) --> R[POST /api/resumes]
+    R --> ATS[ATS engine\nscore + verdict + data points]
+    ATS --> AIBF[AIBF engine\nbias score + explanation]
+    AIBF -->|flagged?| Q{bias_score > upper?}
+    Q -- no --> OK[Store: not flagged]
+    Q -- yes --> HR[HR review\n/api/admin/flagged]
+    HR --> FB[POST /api/admin/feedback\naccept / override]
+    FB --> RT[POST /api/model-training/retrain\nrefit + recalibrate threshold]
+    RT --> AIBF

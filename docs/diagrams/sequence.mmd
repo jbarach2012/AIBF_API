@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant Cand as Candidate
+    participant API as AIBF API
+    participant ATS as ATS engine
+    participant BE as Bias engine
+    participant HR as HR reviewer
+
+    Cand->>API: POST /api/resumes
+    API->>ATS: evaluate(features, job)
+    ATS-->>API: score, verdict, data_points
+    API->>BE: analyze(features)
+    BE-->>API: bias_score, flagged, explanations
+    API-->>Cand: ats_decision + flag
+    opt flagged
+        HR->>API: GET /api/admin/flagged
+        HR->>API: POST /api/admin/feedback (accept/override)
+        HR->>API: POST /api/model-training/retrain
+        API->>BE: retrain(feedback)
+        BE-->>API: new model_version + threshold
+    end
