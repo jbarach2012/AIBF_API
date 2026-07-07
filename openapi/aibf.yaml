@@ -1,0 +1,372 @@
+openapi: 3.0.1
+info:
+  title: AIBF Resume Bias Detection API
+  description: API for interacting with the AIBF Resume Bias Detection System, including resume submission, ATS evaluation, bias detection, HR feedback, and model retraining.
+  version: 1.0.0
+  contact:
+    name: AIBF Support
+    email: support@aibf.com
+
+servers:
+  - url: https://resumescan.appambient.com/
+    description: Production Server
+
+paths:
+  /api/resumes:
+    get:
+      summary: Retrieves a list of all resumes
+      operationId: getResumes
+      responses:
+        '200':
+          description: A list of all resumes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    resume_id:
+                      type: string
+                    candidate_id:
+                      type: string
+                    file_url:
+                      type: string
+                    submitted_at:
+                      type: string
+                      format: date-time
+    post:
+      summary: Submits a new resume for ATS evaluation and bias detection
+      operationId: submitResume
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume_id:
+                  type: string
+                candidate_id:
+                  type: string
+                file_url:
+                  type: string
+                submitted_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Resume submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ats_decision_id:
+                    type: string
+                  candidate_id:
+                    type: string
+                  score:
+                    type: number
+                    format: float
+                  final_verdict:
+                    type: string
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /api/ats/evaluate:
+    post:
+      summary: Evaluates a resume's content and provides ATS decision and data points
+      operationId: evaluateATS
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume_id:
+                  type: string
+                job_description:
+                  type: string
+      responses:
+        '200':
+          description: ATS decision generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ats_decision_id:
+                    type: string
+                  candidate_id:
+                    type: string
+                  data_points:
+                    type: object
+                    additionalProperties: true
+                  score:
+                    type: number
+                    format: float
+                  final_verdict:
+                    type: string
+        '400':
+          description: Invalid request
+        '500':
+          description: Server error
+
+  /api/aibf/analyze:
+    post:
+      summary: Analyzes ATS decision and resume for bias detection
+      operationId: analyzeAIBF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ats_decision_id:
+                  type: string
+                resume_id:
+                  type: string
+      responses:
+        '200':
+          description: AIBF bias detection completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  aibf_decision_id:
+                    type: string
+                  ats_decision_id:
+                    type: string
+                  candidate_id:
+                    type: string
+                  bias_score:
+                    type: number
+                    format: float
+                  bias_threshold_limits:
+                    type: object
+                    properties:
+                      upper_limit:
+                        type: number
+                        format: float
+                      lower_limit:
+                        type: number
+                        format: float
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /api/admin/feedback:
+    post:
+      summary: Submit HR feedback on ATS and AIBF decisions
+      operationId: submitHRFeedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                feedback_type:
+                  type: string
+                hr_id:
+                  type: string
+                ats_decision_id:
+                  type: string
+                aibf_decision_id:
+                  type: string
+                feedback_details:
+                  type: string
+                final_verdict:
+                  type: string
+      responses:
+        '201':
+          description: HR feedback submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  model_training_feedback_id:
+                    type: string
+                  ats_output:
+                    type: string
+                  aibf_output:
+                    type: string
+                  training_outcome:
+                    type: string
+        '400':
+          description: Invalid feedback input
+        '500':
+          description: Server error
+
+  /api/model-training/retrain:
+    post:
+      summary: Retrains the bias detection model based on HR feedback and decisions
+      operationId: retrainModel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                feedback_id:
+                  type: string
+                model_version:
+                  type: string
+      responses:
+        '200':
+          description: Model retraining triggered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  model_training_feedback_id:
+                    type: string
+                  ats_output:
+                    type: string
+                  aibf_output:
+                    type: string
+                  training_outcome:
+                    type: string
+        '400':
+          description: Invalid request
+        '500':
+          description: Server error
+
+components:
+  schemas:
+    Resume:
+      type: object
+      properties:
+        resume_id:
+          type: string
+          description: Unique identifier for the resume
+        candidate_id:
+          type: string
+          description: Unique identifier for the candidate
+        file_url:
+          type: string
+          description: URL of the resume document
+        submitted_at:
+          type: string
+          format: date-time
+          description: Date and time the resume was submitted
+    ATSInput:
+      type: object
+      properties:
+        resume_id:
+          type: string
+          description: The ID of the resume to evaluate
+        job_description:
+          type: string
+          description: Job description for the candidate's position
+    ATSDecision:
+      type: object
+      properties:
+        ats_decision_id:
+          type: string
+          description: Unique identifier for the ATS decision
+        candidate_id:
+          type: string
+          description: The candidate ID linked to this decision
+        data_points:
+          type: object
+          additionalProperties: true
+          description: Key-value pairs of decision-making data points
+        score:
+          type: number
+          format: float
+          description: ATS score for the resume
+        final_verdict:
+          type: string
+          description: Final ATS verdict (e.g., accepted, rejected)
+    AIBFInput:
+      type: object
+      properties:
+        ats_decision_id:
+          type: string
+          description: The ATS decision ID to analyze for bias
+        resume_id:
+          type: string
+          description: The resume ID associated with this decision
+    AIBFDecision:
+      type: object
+      properties:
+        aibf_decision_id:
+          type: string
+          description: Unique identifier for the AIBF decision
+        ats_decision_id:
+          type: string
+          description: Associated ATS decision ID
+        candidate_id:
+          type: string
+          description: Candidate ID linked to this AIBF decision
+        bias_score:
+          type: number
+          format: float
+          description: Calculated bias score
+        bias_threshold_limits:
+          type: object
+          properties:
+            upper_limit:
+              type: number
+              format: float
+              description: Upper limit of the bias threshold
+            lower_limit:
+              type: number
+              format: float
+              description: Lower limit of the bias threshold
+    HRFeedback:
+      type: object
+      properties:
+        feedback_type:
+          type: string
+          description: Type of feedback (e.g., positive, negative)
+        hr_id:
+          type: string
+          description: HR identifier providing feedback
+        ats_decision_id:
+          type: string
+          description: ATS decision ID linked to feedback
+        aibf_decision_id:
+          type: string
+          description: AIBF decision ID linked to feedback
+        feedback_details:
+          type: string
+          description: Detailed feedback from HR
+        final_verdict:
+          type: string
+          description: Final verdict based on feedback
+    ModelTrainingInput:
+      type: object
+      properties:
+        feedback_id:
+          type: string
+          description: HR feedback ID used for retraining
+        model_version:
+          type: string
+          description: Version of the model to retrain
+    ModelTrainingFeedback:
+      type: object
+      properties:
+        model_training_feedback_id:
+          type: string
+          description: Unique identifier for the model training feedback
+        ats_output:
+          type: string
+          description: ATS output used in retraining
+        aibf_output:
+          type: string
+          description: AIBF output used in retraining
+        training_outcome:
+          type: string
+          description: Outcome of the retraining process (success, failure)
